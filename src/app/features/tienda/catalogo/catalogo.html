@@ -1,0 +1,445 @@
+
+<div class="tienda-pagina">
+
+  <!-- MENÚ SUPERIOR -->
+  <header class="tienda-header">
+
+    <a routerLink="/home" class="tienda-logo">
+      🐾 PeludOS
+    </a>
+
+    <nav class="tienda-nav">
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/mascotas">Mis mascotas</a>
+      <a routerLink="/veterinarias">Veterinarias</a>
+      <a routerLink="/perfil">Mi perfil</a>
+
+      <a routerLink="/carrito" class="enlace-carrito">
+        🛒 Mi carrito
+        <span class="contador-carrito">
+          {{ cantidadTotalCarrito }}
+        </span>
+      </a>
+    </nav>
+
+  </header>
+
+  <main class="tienda-main">
+
+    <!-- BIENVENIDA -->
+    <section class="tienda-bienvenida">
+
+      <div class="tienda-icono">🛍️🐶💗</div>
+
+      <h1>Tienda PeludOS</h1>
+
+      <p>
+        Todo lo que tus peluditos necesitan,
+        en un solo lugar.
+      </p>
+
+      <a routerLink="/carrito" class="btn btn-primario">
+        🛒 Ver mi carrito ({{ cantidadTotalCarrito }})
+      </a>
+
+    </section>
+
+    <!-- BUSCADOR -->
+    <section class="filtros-tarjeta">
+
+      <div class="filtros-grid">
+
+        <div class="filtro-campo">
+          <label for="buscar">🔎 Buscar producto</label>
+
+          <input
+            id="buscar"
+            type="search"
+            name="busqueda"
+            [(ngModel)]="busqueda"
+            placeholder="Busca alimentos, juguetes..."
+          />
+        </div>
+
+        <div class="filtro-campo">
+          <label for="categoria">🐾 Categoría</label>
+
+          <select
+            id="categoria"
+            name="categoria"
+            [(ngModel)]="categoriaSeleccionada"
+          >
+            <option value="">Todas las categorías</option>
+
+            @for (categoria of categorias; track categoria) {
+              <option [value]="categoria">
+                {{ categoria }}
+              </option>
+            }
+          </select>
+        </div>
+
+      </div>
+
+      <button
+        type="button"
+        class="limpiar-filtros"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar filtros
+      </button>
+
+    </section>
+
+    <!-- CONFIRMACIÓN GENERAL -->
+    @if (mensaje) {
+
+      <section class="tienda-mensaje-exito" role="status">
+
+        <div class="mensaje-contenido">
+          <span class="mensaje-icono">✅</span>
+
+          <div>
+            <strong>¡Producto agregado correctamente!</strong>
+            <p>{{ mensaje }}</p>
+          </div>
+        </div>
+
+        <a routerLink="/carrito" class="mensaje-enlace">
+          Ver mi carrito 🛒
+        </a>
+
+      </section>
+
+    }
+
+    <!-- ERRORES -->
+    @if (error) {
+      <div class="mensaje-error" role="alert">
+        {{ error }}
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-primario"
+        (click)="cargarProductos()"
+      >
+        Intentar nuevamente
+      </button>
+    }
+
+    @if (errorCarrito) {
+      <div class="mensaje-error" role="alert">
+        {{ errorCarrito }}
+      </div>
+    }
+
+    @if (errorDetalle) {
+      <div class="mensaje-error" role="alert">
+        {{ errorDetalle }}
+      </div>
+    }
+
+    <!-- DETALLES DEL PRODUCTO -->
+    @if (cargandoDetalle) {
+      <p class="estado-vacio">
+        Consultando detalles...
+      </p>
+    }
+
+    @if (productoSeleccionado) {
+
+      <section class="detalle-producto">
+
+        <div class="detalle-encabezado">
+          <h2>
+            🛍️ {{ productoSeleccionado.nombre_producto }}
+          </h2>
+
+          <button
+            type="button"
+            class="btn-cerrar"
+            (click)="cerrarDetalles()"
+          >
+            Cerrar
+          </button>
+        </div>
+
+        <div class="detalle-grid">
+
+          <div class="detalle-imagen">
+
+            @if (productoSeleccionado.imagen_url) {
+              <img
+                [src]="productoSeleccionado.imagen_url"
+                [alt]="productoSeleccionado.nombre_producto"
+              />
+            } @else {
+              <span>🐾🛍️</span>
+            }
+
+          </div>
+
+          <div class="detalle-informacion">
+
+            <p>
+              <strong>Descripción:</strong>
+              {{ productoSeleccionado.descripcion || 'Sin descripción' }}
+            </p>
+
+            <p>
+              <strong>Categoría:</strong>
+              {{ productoSeleccionado.categoria || 'Sin categoría' }}
+            </p>
+
+            <p>
+              <strong>Precio:</strong>
+              {{
+                +productoSeleccionado.precio_venta
+                  | currency:'COP':'symbol':'1.0-0':'es-CO'
+              }}
+            </p>
+
+            <p>
+              <strong>Stock disponible:</strong>
+              {{ productoSeleccionado.stock }}
+            </p>
+
+            <p>
+              <strong>Unidad de medida:</strong>
+              {{ productoSeleccionado.unidad_medida || 'Unidad' }}
+            </p>
+
+            @if (cantidadProductoEnCarrito(
+              productoSeleccionado.id_producto
+            ) > 0) {
+              <p class="cantidad-actual">
+                🛒 Ya tienes
+                {{
+                  cantidadProductoEnCarrito(
+                    productoSeleccionado.id_producto
+                  )
+                }}
+                unidad(es) en tu carrito.
+              </p>
+            }
+
+            @if (tieneStock(productoSeleccionado)) {
+
+              <button
+                type="button"
+                class="btn btn-primario producto-boton"
+                [disabled]="agregandoId !== null"
+                (click)="agregarAlCarrito(productoSeleccionado)"
+              >
+                {{
+                  agregandoId === productoSeleccionado.id_producto
+                    ? 'Agregando...'
+                    : ultimoAgregadoId === productoSeleccionado.id_producto
+                      ? '✓ Agregado · Agregar otro'
+                      : 'Agregar al carrito 🛒'
+                }}
+              </button>
+
+              @if (
+                ultimoAgregadoId === productoSeleccionado.id_producto
+              ) {
+                <div class="confirmacion-producto" role="status">
+                  <strong>✓ ¡Agregado a tu carrito!</strong>
+                  <a routerLink="/carrito">
+                    Ver mi carrito 🛒
+                  </a>
+                </div>
+              }
+
+            } @else {
+              <span class="stock-agotado">Producto agotado</span>
+            }
+
+          </div>
+
+        </div>
+
+      </section>
+
+    }
+
+    <!-- CATÁLOGO -->
+    <section class="productos-seccion">
+
+      <h2>Productos para tus peluditos 💕</h2>
+
+      @if (cargando) {
+
+        <div class="estado-vacio">
+          Cargando productos...
+        </div>
+
+      } @else if (error) {
+
+        <div class="estado-vacio">
+          No fue posible cargar el catálogo.
+        </div>
+
+      } @else if (productosFiltrados.length === 0) {
+
+        <div class="estado-vacio">
+
+          <div class="vacio-icono">🐾</div>
+
+          @if (busqueda || categoriaSeleccionada) {
+            <h3>No encontramos productos</h3>
+            <p>Prueba con otro nombre o categoría.</p>
+          } @else {
+            <h3>Aún no hay productos disponibles</h3>
+            <p>Los productos registrados aparecerán aquí.</p>
+          }
+
+        </div>
+
+      } @else {
+
+        <p class="contador-productos">
+          {{ productosFiltrados.length }}
+          producto(s) encontrado(s)
+        </p>
+
+        <div class="productos-grid">
+
+          @for (
+            producto of productosFiltrados;
+            track producto.id_producto
+          ) {
+
+            <article class="producto-tarjeta">
+
+              <div class="producto-imagen">
+
+                @if (producto.imagen_url) {
+                  <img
+                    [src]="producto.imagen_url"
+                    [alt]="producto.nombre_producto"
+                  />
+                } @else {
+                  <span>🛍️🐾</span>
+                }
+
+              </div>
+
+              <div class="producto-contenido">
+
+                <span class="producto-categoria">
+                  {{ producto.categoria || 'Producto' }}
+                </span>
+
+                <h3>{{ producto.nombre_producto }}</h3>
+
+                <p class="producto-descripcion">
+                  {{ producto.descripcion || 'Producto para mascotas' }}
+                </p>
+
+                <p class="producto-precio">
+                  {{
+                    +producto.precio_venta
+                      | currency:'COP':'symbol':'1.0-0':'es-CO'
+                  }}
+                </p>
+
+                @if (tieneStock(producto)) {
+                  <span class="stock-disponible">
+                    Disponible · {{ producto.stock }} en stock
+                  </span>
+                } @else {
+                  <span class="stock-agotado">
+                    Agotado
+                  </span>
+                }
+
+                <!-- CANTIDAD YA AGREGADA -->
+                @if (
+                  cantidadProductoEnCarrito(producto.id_producto) > 0
+                ) {
+                  <div class="cantidad-actual">
+                    🛒 En tu carrito:
+                    <strong>
+                      {{
+                        cantidadProductoEnCarrito(
+                          producto.id_producto
+                        )
+                      }}
+                      unidad(es)
+                    </strong>
+                  </div>
+                }
+
+                <!-- VER DETALLES -->
+                <button
+                  type="button"
+                  class="btn-detalles producto-boton"
+                  (click)="verDetalles(producto)"
+                >
+                  Ver detalles 💗
+                </button>
+
+                <!-- AGREGAR AL CARRITO -->
+                <button
+                  type="button"
+                  class="btn btn-primario producto-boton"
+                  [disabled]="
+                    !tieneStock(producto) ||
+                    agregandoId !== null
+                  "
+                  (click)="agregarAlCarrito(producto)"
+                >
+                  {{
+                    agregandoId === producto.id_producto
+                      ? 'Agregando...'
+                      : !tieneStock(producto)
+                        ? 'Producto agotado'
+                        : ultimoAgregadoId === producto.id_producto
+                          ? '✓ Agregado · Agregar otro'
+                          : 'Agregar al carrito 🛒'
+                  }}
+                </button>
+
+                <!-- CONFIRMACIÓN EN LA MISMA TARJETA -->
+                @if (ultimoAgregadoId === producto.id_producto) {
+
+                  <div
+                    class="confirmacion-producto"
+                    role="status"
+                  >
+                    <strong>
+                      ✓ ¡Agregado correctamente!
+                    </strong>
+
+                    <span>
+                      Tu producto ya está en el carrito.
+                    </span>
+
+                    <a routerLink="/carrito">
+                      Ver mi carrito 🛒
+                    </a>
+                  </div>
+
+                }
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+  </main>
+
+  <footer class="tienda-footer">
+    🐾 PeludOS — Cuidamos a quienes más amas 💗
+  </footer>
+
+</div>

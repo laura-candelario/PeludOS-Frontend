@@ -1,0 +1,25 @@
+﻿# Dependencias
+node_modules/
+
+# Compilaciones
+dist/
+.angular/
+coverage/
+
+# Credenciales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Configuraciones locales
+.vscode/
+.idea/
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+*.bak

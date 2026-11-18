@@ -1,0 +1,290 @@
+
+.veterinarias-pagina {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #fff7fb, #fce7f3);
+}
+
+.veterinarias-header {
+  background: white;
+  border-bottom: 1px solid #f5c6df;
+  padding: 18px 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.veterinarias-logo {
+  color: #b83280;
+  font-size: 27px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.veterinarias-nav {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.veterinarias-nav a {
+  color: #5b2846;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.veterinarias-nav a:hover {
+  color: #d63384;
+}
+
+.veterinarias-main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 35px 22px;
+  flex: 1;
+}
+
+.veterinarias-bienvenida {
+  background: linear-gradient(120deg, #fce7f3, white);
+  border: 1px solid #f5c6df;
+  border-radius: 24px;
+  padding: 40px 25px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.veterinarias-icono {
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.veterinarias-bienvenida h1 {
+  color: #b83280;
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.veterinarias-bienvenida p {
+  color: #806477;
+  line-height: 1.6;
+}
+
+.buscador-tarjeta,
+.detalle-tarjeta {
+  background: white;
+  border: 1px solid #f5c6df;
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.buscador-tarjeta label {
+  display: block;
+  color: #5b2846;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.buscador-tarjeta input {
+  width: 100%;
+  border: 1px solid #f5c6df;
+  border-radius: 12px;
+  padding: 14px;
+  font: inherit;
+  background: #fffafd;
+  color: #5b2846;
+}
+
+.buscador-tarjeta input:focus {
+  outline: 2px solid #f9a8d4;
+}
+
+.veterinarias-listado h2 {
+  color: #5b2846;
+  margin-bottom: 18px;
+}
+
+.contador-resultados {
+  color: #806477;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.veterinarias-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.veterinaria-tarjeta {
+  background: white;
+  border: 1px solid #f5c6df;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(214, 51, 132, 0.07);
+}
+
+.veterinaria-imagen {
+  height: 150px;
+  background: #fce7f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+}
+
+.veterinaria-info {
+  padding: 22px;
+}
+
+.veterinaria-info h3 {
+  color: #b83280;
+  font-size: 21px;
+  margin-bottom: 18px;
+}
+
+.veterinaria-info p {
+  color: #806477;
+  font-size: 14px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.veterinaria-acciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.veterinaria-acciones .btn,
+.boton-ubicacion {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 11px;
+  border-radius: 10px;
+}
+
+.boton-ubicacion {
+  background: #fce7f3;
+  border: 1px solid #f5c6df;
+  color: #b83280;
+  font-weight: 700;
+}
+
+.detalle-encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.detalle-encabezado h2 {
+  color: #b83280;
+  overflow-wrap: anywhere;
+}
+
+.btn-cerrar {
+  background: #fce7f3;
+  color: #b83280;
+  border: 1px solid #f5c6df;
+  border-radius: 10px;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.detalle-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.detalle-datos p {
+  background: #fff7fb;
+  border-radius: 12px;
+  padding: 15px;
+  color: #5b2846;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.enlace-mapa {
+  display: inline-block;
+  text-decoration: none;
+  padding: 12px 18px;
+}
+
+.estado-vacio {
+  background: white;
+  border: 1px dashed #f5c6df;
+  border-radius: 18px;
+  padding: 40px;
+  text-align: center;
+  color: #806477;
+}
+
+.estado-vacio h3 {
+  color: #b83280;
+  margin-bottom: 10px;
+}
+
+.vacio-icono {
+  font-size: 45px;
+  margin-bottom: 12px;
+}
+
+.mensaje-error {
+  background: #fff0f3;
+  color: #b42345;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 15px;
+}
+
+.veterinarias-footer {
+  background: white;
+  border-top: 1px solid #f5c6df;
+  text-align: center;
+  padding: 22px;
+  color: #806477;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .veterinarias-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .veterinarias-header {
+    flex-direction: column;
+  }
+
+  .veterinarias-nav {
+    justify-content: center;
+  }
+
+  .veterinarias-main {
+    padding: 20px 15px;
+  }
+
+  .veterinarias-grid,
+  .detalle-datos {
+    grid-template-columns: 1fr;
+  }
+
+  .veterinarias-bienvenida h1 {
+    font-size: 26px;
+  }
+}

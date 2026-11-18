@@ -1,0 +1,395 @@
+
+<div class="pedidos-pagina">
+
+  <!-- NAVEGACIÓN -->
+  <header class="pedidos-header">
+
+    <a routerLink="/home" class="pedidos-logo">
+      🐾 PeludOS
+    </a>
+
+    <nav class="pedidos-nav">
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/tienda">Tienda</a>
+      <a routerLink="/carrito">🛒 Mi carrito</a>
+      <a routerLink="/mascotas">Mis mascotas</a>
+      <a routerLink="/perfil">Mi perfil</a>
+    </nav>
+
+  </header>
+
+  <main class="pedidos-main">
+
+    <section class="pedidos-bienvenida">
+
+      <div class="bienvenida-icono">🧾🐾💗</div>
+
+      <h1>Mis pedidos</h1>
+
+      <p>
+        Consulta tus compras, revisa su estado
+        y administra los datos de entrega.
+      </p>
+
+      <a routerLink="/tienda" class="btn-tienda">
+        🛍️ Explorar la tienda
+      </a>
+
+    </section>
+
+    <!-- MENSAJES -->
+    @if (mensaje) {
+      <div class="mensaje-exito" role="status">
+        ✓ {{ mensaje }}
+      </div>
+    }
+
+    @if (error) {
+      <div class="mensaje-error" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    <div class="listado-encabezado">
+
+      <h2>Historial de pedidos</h2>
+
+      <button
+        type="button"
+        class="btn-actualizar"
+        [disabled]="cargando || procesandoId !== null"
+        (click)="cargarPedidos()"
+      >
+        ↻ Actualizar
+      </button>
+
+    </div>
+
+    @if (cargando) {
+
+      <section class="estado-vacio">
+        <div class="estado-icono">🐾</div>
+        <h3>Cargando tus pedidos...</h3>
+      </section>
+
+    } @else if (error && pedidos.length === 0) {
+
+      <section class="estado-vacio">
+        <h3>No pudimos consultar tus pedidos</h3>
+
+        <button
+          type="button"
+          class="btn-actualizar"
+          (click)="cargarPedidos()"
+        >
+          Intentar nuevamente
+        </button>
+      </section>
+
+    } @else if (pedidos.length === 0) {
+
+      <section class="estado-vacio">
+
+        <div class="estado-icono">🛍️</div>
+
+        <h3>Todavía no tienes pedidos</h3>
+
+        <p>
+          Cuando confirmes una compra,
+          podrás consultar su información aquí.
+        </p>
+
+        <a routerLink="/tienda" class="btn-tienda">
+          Ir a la tienda 💗
+        </a>
+
+      </section>
+
+    } @else {
+
+      <div class="pedidos-lista">
+
+        @for (pedido of pedidos; track pedido.id_pedido) {
+
+          <article class="pedido-tarjeta">
+
+            <!-- ENCABEZADO -->
+            <div class="pedido-superior">
+
+              <div>
+                <span class="pedido-etiqueta">
+                  🧾 Pedido
+                </span>
+
+                <h3>#{{ pedido.id_pedido }}</h3>
+              </div>
+
+              <span
+                class="pedido-estado"
+                [class]="claseEstado(pedido.estado_pedido)"
+              >
+                {{ nombreEstado(pedido.estado_pedido) }}
+              </span>
+
+            </div>
+
+            <!-- INFORMACIÓN PRINCIPAL -->
+            <div class="pedido-datos">
+
+              <div class="dato">
+                <span>Fecha del pedido</span>
+
+                <strong>
+                  {{
+                    pedido.fecha_pedido
+                      | date:'dd/MM/yyyy, h:mm a'
+                  }}
+                </strong>
+              </div>
+
+              <div class="dato">
+                <span>Número de pedido</span>
+
+                <strong>#{{ pedido.id_pedido }}</strong>
+              </div>
+
+            </div>
+
+            <div class="pedido-total">
+
+              <span>Total del pedido</span>
+
+              <strong>
+                {{
+                  convertirPrecio(pedido.total)
+                    | currency:'COP':'symbol':'1.0-0':'es-CO'
+                }}
+              </strong>
+
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="pedido-acciones">
+
+              <button
+                type="button"
+                class="btn-detalles"
+                [attr.aria-expanded]="
+                  detalleAbiertoId === pedido.id_pedido
+                "
+                (click)="verDetalles(pedido)"
+              >
+                {{
+                  detalleAbiertoId === pedido.id_pedido
+                    ? 'Ocultar detalles'
+                    : 'Ver detalles 💗'
+                }}
+              </button>
+
+              @if (puedeEditar(pedido)) {
+
+                <button
+                  type="button"
+                  class="btn-editar"
+                  [disabled]="procesandoId !== null"
+                  (click)="iniciarEdicion(pedido)"
+                >
+                  ✏️ Editar entrega
+                </button>
+
+              }
+
+              @if (puedeCancelar(pedido)) {
+
+                <button
+                  type="button"
+                  class="btn-cancelar"
+                  [disabled]="procesandoId !== null"
+                  (click)="cancelarPedido(pedido)"
+                >
+                  {{
+                    procesandoId === pedido.id_pedido
+                      ? 'Procesando...'
+                      : 'Cancelar pedido'
+                  }}
+                </button>
+
+              }
+
+            </div>
+
+            <!-- DETALLES -->
+            @if (detalleAbiertoId === pedido.id_pedido) {
+
+              <section class="detalle-pedido">
+
+                <h4>Información de tu pedido</h4>
+
+                <div class="detalle-fila">
+                  <span>Estado</span>
+                  <strong>
+                    {{ nombreEstado(pedido.estado_pedido) }}
+                  </strong>
+                </div>
+
+                <div class="detalle-fila">
+                  <span>Dirección de entrega</span>
+                  <strong>
+                    {{ pedido.direccion_entrega }}
+                  </strong>
+                </div>
+
+                <div class="detalle-fila">
+                  <span>Método de pago</span>
+                  <strong>
+                    {{
+                      pedido.metodo_pago === 'contra_entrega'
+                        ? 'Pago contra entrega'
+                        : pedido.metodo_pago || 'Por definir'
+                    }}
+                  </strong>
+                </div>
+
+                <div class="detalle-fila">
+                  <span>Notas</span>
+                  <strong>
+                    {{ pedido.notas || 'Sin indicaciones' }}
+                  </strong>
+                </div>
+
+                @if (pedido.fecha_entrega) {
+
+                  <div class="detalle-fila">
+                    <span>Fecha de entrega</span>
+
+                    <strong>
+                      {{
+                        pedido.fecha_entrega
+                          | date:'dd/MM/yyyy, h:mm a'
+                      }}
+                    </strong>
+                  </div>
+
+                }
+
+                @if (pedido.estado_pedido === 'cancelado') {
+
+                  <div class="aviso-cancelado">
+                    Este pedido fue cancelado.
+                    No continuará su proceso de entrega.
+                  </div>
+
+                } @else if (puedeEditar(pedido)) {
+
+                  <p class="detalle-nota">
+                    Puedes actualizar la dirección y las notas
+                    mientras el pedido esté pendiente.
+                  </p>
+
+                }
+
+              </section>
+
+            }
+
+            <!-- FORMULARIO DE EDICIÓN -->
+            @if (editandoId === pedido.id_pedido) {
+
+              <section class="editar-panel">
+
+                <h4>✏️ Editar datos de entrega</h4>
+
+                <form
+                  #formEntrega="ngForm"
+                  (ngSubmit)="guardarEntrega(pedido)"
+                >
+
+                  <div class="campo">
+
+                    <label
+                      [for]="'direccion-' + pedido.id_pedido"
+                    >
+                      Dirección de entrega *
+                    </label>
+
+                    <textarea
+                      [id]="'direccion-' + pedido.id_pedido"
+                      name="direccionEditada"
+                      [(ngModel)]="direccionEditada"
+                      required
+                      minlength="5"
+                      maxlength="500"
+                      rows="3"
+                      [disabled]="procesandoId !== null"
+                    ></textarea>
+
+                  </div>
+
+                  <div class="campo">
+
+                    <label
+                      [for]="'notas-' + pedido.id_pedido"
+                    >
+                      Indicaciones adicionales
+                    </label>
+
+                    <textarea
+                      [id]="'notas-' + pedido.id_pedido"
+                      name="notasEditadas"
+                      [(ngModel)]="notasEditadas"
+                      maxlength="1000"
+                      rows="3"
+                      [disabled]="procesandoId !== null"
+                    ></textarea>
+
+                  </div>
+
+                  <div class="edicion-acciones">
+
+                    <button
+                      type="submit"
+                      class="btn-guardar"
+                      [disabled]="
+                        formEntrega.invalid ||
+                        procesandoId !== null
+                      "
+                    >
+                      {{
+                        procesandoId === pedido.id_pedido
+                          ? 'Guardando...'
+                          : 'Guardar cambios 💗'
+                      }}
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-descartar"
+                      [disabled]="procesandoId !== null"
+                      (click)="cancelarEdicion()"
+                    >
+                      Descartar
+                    </button>
+
+                  </div>
+
+                </form>
+
+              </section>
+
+            }
+
+          </article>
+
+        }
+
+      </div>
+
+    }
+
+  </main>
+
+  <footer class="pedidos-footer">
+    🐾 PeludOS — Cuidamos a quienes más amas 💗
+  </footer>
+
+</div>

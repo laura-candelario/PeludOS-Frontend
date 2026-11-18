@@ -1,0 +1,417 @@
+
+<div class="checkout-pagina">
+
+  <!-- NAVEGACIÓN -->
+  <header class="checkout-header">
+
+    <a routerLink="/home" class="checkout-logo">
+      🐾 PeludOS
+    </a>
+
+    <nav class="checkout-nav">
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/tienda">Tienda</a>
+      <a routerLink="/carrito">Mi carrito</a>
+      <a routerLink="/pedidos">Mis pedidos</a>
+    </nav>
+
+  </header>
+
+  <main class="checkout-main">
+
+    <!-- PEDIDO CONFIRMADO -->
+    @if (pedidoConfirmado) {
+
+      <section class="compra-exitosa" role="status">
+
+        <div class="exito-icono">
+          🎉🐾💗
+        </div>
+
+        <h1>¡Tu pedido fue registrado!</h1>
+
+        <p>
+          Recibimos tu pedido correctamente.
+          Puedes consultar su estado en Mis pedidos.
+        </p>
+
+        <div class="exito-detalles">
+
+          <div>
+            <span>Número de pedido</span>
+            <strong>
+              #{{ pedidoConfirmado.id_pedido }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Estado</span>
+            <strong>
+              {{ pedidoConfirmado.estado_pedido }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Total</span>
+            <strong>
+              {{
+                convertirPrecio(pedidoConfirmado.total)
+                  | currency:'COP':'symbol':'1.0-0':'es-CO'
+              }}
+            </strong>
+          </div>
+
+          <div>
+            <span>Dirección de entrega</span>
+            <strong>
+              {{ pedidoConfirmado.direccion_entrega }}
+            </strong>
+          </div>
+
+        </div>
+
+        <p class="aviso-pago">
+          Tu pedido quedó registrado.
+          PeludOS todavía no procesa
+          pagos electrónicos.
+        </p>
+
+        <div class="exito-acciones">
+
+          <a
+            routerLink="/pedidos"
+            class="btn-principal"
+          >
+            🧾 Ver mis pedidos
+          </a>
+
+          <a
+            routerLink="/tienda"
+            class="btn-secundario"
+          >
+            🛍️ Seguir comprando
+          </a>
+
+        </div>
+
+      </section>
+
+    } @else {
+
+      <!-- BIENVENIDA -->
+      <section class="checkout-bienvenida">
+
+        <div class="bienvenida-icono">
+          🛒🎀🐶
+        </div>
+
+        <h1>Finalizar compra</h1>
+
+        <p>
+          Revisa tus productos y completa
+          los datos para registrar tu pedido.
+        </p>
+
+      </section>
+
+      @if (error) {
+
+        <div class="mensaje-error" role="alert">
+          {{ error }}
+
+          <p>
+            <a routerLink="/pedidos">
+              Consultar mis pedidos
+            </a>
+          </p>
+        </div>
+
+      }
+
+      @if (cargando) {
+
+        <div class="estado-vacio">
+          Cargando los productos de tu carrito...
+        </div>
+
+      } @else if (
+        !carrito ||
+        carrito.detalles.length === 0
+      ) {
+
+        <div class="estado-vacio">
+
+          <div class="vacio-icono">🛒</div>
+
+          <h2>Tu carrito está vacío</h2>
+
+          <p>
+            Selecciona productos en la tienda
+            para poder registrar un pedido.
+          </p>
+
+          <a
+            routerLink="/tienda"
+            class="btn-principal"
+          >
+            Ir a la tienda 💗
+          </a>
+
+        </div>
+
+      } @else {
+
+        <div class="checkout-grid">
+
+          <!-- DATOS DE ENTREGA -->
+          <section class="datos-entrega">
+
+            <h2>📝 Datos de entrega</h2>
+
+            <form
+              #formCompra="ngForm"
+              (ngSubmit)="confirmarPedido()"
+            >
+
+              <div class="campo">
+
+                <label for="direccion">
+                  Dirección de entrega *
+                </label>
+
+                <textarea
+                  id="direccion"
+                  name="direccion"
+                  [(ngModel)]="direccionEntrega"
+                  #direccionCampo="ngModel"
+                  required
+                  minlength="5"
+                  maxlength="500"
+                  rows="3"
+                  placeholder="Ej. Calle 123 #45-67, apartamento 201"
+                  [disabled]="confirmando"
+                ></textarea>
+
+                <small>
+                  Escribe la dirección completa
+                  para facilitar la entrega.
+                </small>
+
+                @if (
+                  direccionCampo.invalid &&
+                  direccionCampo.touched
+                ) {
+
+                  <span class="error-campo">
+                    La dirección debe tener
+                    al menos 5 caracteres.
+                  </span>
+
+                }
+
+              </div>
+
+              <div class="campo">
+
+                <label for="metodoPago">
+                  Método de pago
+                </label>
+
+                <select
+                  id="metodoPago"
+                  name="metodoPago"
+                  [(ngModel)]="metodoPago"
+                  [disabled]="confirmando"
+                >
+
+                  <option value="contra_entrega">
+                    Pago contra entrega
+                  </option>
+
+                  <option value="">
+                    Por definir
+                  </option>
+
+                </select>
+
+                <small>
+                  Registramos tu preferencia.
+                  No se realiza ningún cobro
+                  electrónico en esta pantalla.
+                </small>
+
+              </div>
+
+              <div class="campo">
+
+                <label for="notas">
+                  Indicaciones adicionales (opcional)
+                </label>
+
+                <textarea
+                  id="notas"
+                  name="notas"
+                  [(ngModel)]="notas"
+                  maxlength="1000"
+                  rows="3"
+                  placeholder="Ej. Tocar el timbre al llegar..."
+                  [disabled]="confirmando"
+                ></textarea>
+
+              </div>
+
+              <div class="informacion-importante">
+
+                <strong>
+                  🐾 Revisa antes de confirmar
+                </strong>
+
+                <p>
+                  Al confirmar, PeludOS creará
+                  un pedido y descontará las unidades
+                  disponibles del inventario.
+                </p>
+
+                <p>
+                  Por ahora, cada pedido debe incluir
+                  productos de una sola veterinaria.
+                </p>
+
+              </div>
+
+              <button
+                type="submit"
+                class="btn-confirmar"
+                [disabled]="
+                  confirmando ||
+                  formCompra.invalid
+                "
+              >
+                {{
+                  confirmando
+                    ? 'Confirmando pedido...'
+                    : 'Confirmar mi pedido 💗'
+                }}
+              </button>
+
+              <a
+                routerLink="/carrito"
+                class="volver-carrito"
+              >
+                ← Volver al carrito
+              </a>
+
+            </form>
+
+          </section>
+
+          <!-- RESUMEN CON NOMBRES REALES -->
+          <aside class="resumen-compra">
+
+            <h2>🛍️ Resumen de compra</h2>
+
+            @for (
+              detalle of carrito.detalles;
+              track detalle.id_detalle_carrito
+            ) {
+
+              <div class="resumen-producto">
+
+                <div class="resumen-producto-icono">
+
+                  @if (
+                    imagenProducto(detalle.id_producto)
+                  ) {
+
+                    <img
+                      [src]="imagenProducto(detalle.id_producto)"
+                      [alt]="nombreProducto(detalle.id_producto)"
+                      style="
+                        width: 46px;
+                        height: 46px;
+                        border-radius: 10px;
+                        object-fit: cover;
+                      "
+                    />
+
+                  } @else {
+
+                    🐾
+
+                  }
+
+                </div>
+
+                <div class="resumen-producto-info">
+
+                  <strong>
+                    {{ nombreProducto(detalle.id_producto) }}
+                  </strong>
+
+                  <span>
+                    Cantidad: {{ detalle.cantidad }}
+                  </span>
+
+                  <span>
+                    {{
+                      convertirPrecio(detalle.precio_unitario)
+                        | currency:'COP':'symbol':'1.0-0':'es-CO'
+                    }}
+                    por unidad
+                  </span>
+
+                </div>
+
+                <strong class="resumen-subtotal">
+                  {{
+                    convertirPrecio(detalle.subtotal)
+                      | currency:'COP':'symbol':'1.0-0':'es-CO'
+                  }}
+                </strong>
+
+              </div>
+
+            }
+
+            <div class="resumen-cantidad">
+
+              <span>Unidades en el carrito</span>
+
+              <strong>{{ cantidadTotal }}</strong>
+
+            </div>
+
+            <div class="resumen-total">
+
+              <span>Total del pedido</span>
+
+              <strong>
+                {{
+                  convertirPrecio(carrito.total)
+                    | currency:'COP':'symbol':'1.0-0':'es-CO'
+                }}
+              </strong>
+
+            </div>
+
+            <p class="resumen-aviso">
+              Los precios y el total se consultan
+              desde FastAPI. El inventario se
+              validará nuevamente al confirmar.
+            </p>
+
+          </aside>
+
+        </div>
+
+      }
+
+    }
+
+  </main>
+
+  <footer class="checkout-footer">
+    🐾 PeludOS — Cuidamos a quienes más amas 💗
+  </footer>
+
+</div>

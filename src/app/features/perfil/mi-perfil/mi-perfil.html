@@ -1,0 +1,372 @@
+
+<div class="perfil-pagina">
+
+  <header class="perfil-header">
+
+    <a routerLink="/home" class="perfil-logo">
+      🐾 PeludOS
+    </a>
+
+    <nav class="perfil-nav">
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/mascotas">Mis mascotas</a>
+      <a routerLink="/tienda">Tienda</a>
+      <a routerLink="/pedidos">Mis pedidos</a>
+    </nav>
+
+  </header>
+
+  <main class="perfil-contenido">
+
+    @if (cargando) {
+
+      <div class="perfil-vacio">
+        🐾 Cargando tu perfil...
+      </div>
+
+    } @else if (!perfil) {
+
+      <div class="perfil-vacio">
+
+        <h2>No pudimos mostrar tu perfil</h2>
+
+        <p>{{ error }}</p>
+
+        <button
+          type="button"
+          class="btn-primario"
+          (click)="cargarPerfil()"
+        >
+          Intentar de nuevo
+        </button>
+
+      </div>
+
+    } @else {
+
+      <section class="perfil-portada">
+
+        <div class="perfil-avatar">
+          {{ iniciales }}
+        </div>
+
+        <div class="perfil-presentacion">
+
+          <p class="perfil-saludo">
+            🐾 Tu espacio PeludOS
+          </p>
+
+          <h1>
+            {{ perfil.nombre_completo }} 💗
+          </h1>
+
+          <p>
+            {{ perfil.correo_electronico }}
+          </p>
+
+          <span class="perfil-rol">
+            {{ nombreRol }}
+          </span>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-editar"
+          [disabled]="guardando"
+          (click)="comenzarEdicion()"
+        >
+          ✏️ Editar perfil
+        </button>
+
+      </section>
+
+      @if (mensaje) {
+        <div class="perfil-exito" role="status">
+          {{ mensaje }}
+        </div>
+      }
+
+      @if (error) {
+        <div class="perfil-error" role="alert">
+          {{ error }}
+        </div>
+      }
+
+      <section class="perfil-seccion">
+
+        <h2>✨ Mis accesos rápidos</h2>
+
+        <div class="perfil-accesos">
+
+          <a routerLink="/mascotas" class="perfil-acceso">
+            <span class="acceso-icono">🐶</span>
+            <strong>Mis mascotas</strong>
+            <small>Gestiona tus peluditos</small>
+          </a>
+
+          <a routerLink="/pedidos" class="perfil-acceso">
+            <span class="acceso-icono">🛍️</span>
+            <strong>Mis pedidos</strong>
+            <small>Consulta tus compras</small>
+          </a>
+
+          <a routerLink="/carrito" class="perfil-acceso">
+            <span class="acceso-icono">🛒</span>
+            <strong>Mi carrito</strong>
+            <small>Continúa comprando</small>
+          </a>
+
+          <a routerLink="/veterinarias" class="perfil-acceso">
+            <span class="acceso-icono">🏥</span>
+            <strong>Veterinarias</strong>
+            <small>Explora el directorio</small>
+          </a>
+
+          @if (tienePanel) {
+
+            <a routerLink="/admin" class="perfil-acceso">
+              <span class="acceso-icono">📊</span>
+              <strong>Administración</strong>
+              <small>Abre tu panel</small>
+            </a>
+
+          }
+
+        </div>
+
+      </section>
+
+      <div class="perfil-columnas">
+
+        <section class="perfil-seccion">
+
+          <div class="seccion-titulo">
+
+            <div>
+              <h2>💕 Información personal</h2>
+
+              <p>
+                Consulta y actualiza tus datos.
+              </p>
+            </div>
+
+          </div>
+
+          @if (!editando) {
+
+            <div class="perfil-dato">
+              <span>Nombre completo</span>
+              <strong>
+                {{ perfil.nombre_completo }}
+              </strong>
+            </div>
+
+            <div class="perfil-dato">
+              <span>Correo electrónico</span>
+              <strong>
+                {{ perfil.correo_electronico }}
+              </strong>
+            </div>
+
+            <div class="perfil-dato">
+              <span>Teléfono</span>
+              <strong>
+                {{ perfil.telefono || 'Sin registrar' }}
+              </strong>
+            </div>
+
+            <div class="perfil-dato">
+              <span>Dirección</span>
+              <strong>
+                {{ perfil.direccion || 'Sin registrar' }}
+              </strong>
+            </div>
+
+            <button
+              type="button"
+              class="btn-primario"
+              (click)="comenzarEdicion()"
+            >
+              ✏️ Actualizar mis datos
+            </button>
+
+          } @else {
+
+            <form
+              #formPerfil="ngForm"
+              (ngSubmit)="guardarPerfil()"
+            >
+
+              <div class="perfil-campo">
+
+                <label for="nombre">
+                  Nombre completo *
+                </label>
+
+                <input
+                  id="nombre"
+                  name="nombre"
+                  type="text"
+                  required
+                  minlength="3"
+                  maxlength="100"
+                  [(ngModel)]="nombreCompleto"
+                  [disabled]="guardando"
+                />
+
+              </div>
+
+              <div class="perfil-campo">
+
+                <label for="telefono">
+                  Teléfono
+                </label>
+
+                <input
+                  id="telefono"
+                  name="telefono"
+                  type="tel"
+                  maxlength="20"
+                  [(ngModel)]="telefono"
+                  [disabled]="guardando"
+                  placeholder="Número de contacto"
+                />
+
+              </div>
+
+              <div class="perfil-campo">
+
+                <label for="direccion">
+                  Dirección
+                </label>
+
+                <textarea
+                  id="direccion"
+                  name="direccion"
+                  rows="3"
+                  maxlength="500"
+                  [(ngModel)]="direccion"
+                  [disabled]="guardando"
+                  placeholder="Tu dirección"
+                ></textarea>
+
+              </div>
+
+              <p class="perfil-ayuda">
+                El correo electrónico y el rol
+                no se modifican desde aquí.
+              </p>
+
+              <div class="perfil-botones">
+
+                <button
+                  type="submit"
+                  class="btn-primario"
+                  [disabled]="
+                    guardando ||
+                    formPerfil.invalid
+                  "
+                >
+                  {{
+                    guardando
+                      ? 'Guardando...'
+                      : 'Guardar cambios 💗'
+                  }}
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-secundario"
+                  [disabled]="guardando"
+                  (click)="descartarCambios()"
+                >
+                  Cancelar
+                </button>
+
+              </div>
+
+            </form>
+
+          }
+
+        </section>
+
+        <section class="perfil-seccion">
+
+          <h2>🔐 Información de la cuenta</h2>
+
+          <div class="perfil-dato">
+            <span>Identificador de usuario</span>
+            <strong>#{{ perfil.id_usuario }}</strong>
+          </div>
+
+          <div class="perfil-dato">
+            <span>Tipo de cuenta</span>
+            <strong>{{ nombreRol }}</strong>
+          </div>
+
+          <div class="perfil-dato">
+            <span>Fecha de registro</span>
+            <strong>
+              {{
+                perfil.fecha_registro
+                  | date:'dd/MM/yyyy'
+              }}
+            </strong>
+          </div>
+
+          <div class="perfil-dato">
+            <span>Estado de la cuenta</span>
+            <strong>
+              {{
+                perfil.activo
+                  ? '✓ Activa'
+                  : 'Inactiva'
+              }}
+            </strong>
+          </div>
+
+          @if (
+            perfil.rol === 'veterinaria' &&
+            perfil.id_veterinaria !== null
+          ) {
+            <div class="perfil-dato">
+              <span>Veterinaria asignada</span>
+              <strong>
+                #{{ perfil.id_veterinaria }}
+              </strong>
+            </div>
+          }
+
+          <div class="perfil-seguridad">
+
+            <strong>🛡️ Seguridad</strong>
+
+            <p>
+              Tu contraseña se almacena protegida
+              en el servidor y no se muestra
+              en esta pantalla.
+            </p>
+
+            <p>
+              Para cambiar la contraseña,
+              necesitaremos habilitar una
+              función de seguridad específica.
+            </p>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    }
+
+  </main>
+
+  <footer class="perfil-footer">
+    🐾 PeludOS — Cuidamos a quienes más amas 💗
+  </footer>
+
+</div>

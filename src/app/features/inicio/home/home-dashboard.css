@@ -1,0 +1,258 @@
+
+/* ========================================= */
+/* PELUDOS - DASHBOARD ROSADITO */
+/* ========================================= */
+
+.peludos-dashboard {
+  min-height: 100vh;
+  background: #fff8fb;
+  color: #482b3a;
+  font-family: inherit;
+}
+
+/* BARRA DE NAVEGACIÓN */
+
+.dashboard-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 20px max(24px, calc((100vw - 1200px) / 2));
+  background: #ffffff;
+  border-bottom: 1px solid #f9d8e6;
+  box-shadow: 0 3px 16px #ac52710d;
+}
+
+.dashboard-logo {
+  color: #cf4380;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.dashboard-menu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+}
+
+.dashboard-menu a {
+  color: #694658;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.94rem;
+}
+
+.dashboard-menu a:hover,
+.dashboard-menu a[aria-current="page"] {
+  color: #c53274;
+}
+
+.dashboard-salir {
+  border: 1px solid #edb0ca;
+  background: #ffffff;
+  color: #b82e6f;
+  border-radius: 24px;
+  padding: 10px 17px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.dashboard-salir:hover {
+  background: #fff0f6;
+}
+
+/* CONTENIDO GENERAL */
+
+.dashboard-contenido {
+  max-width: 1200px;
+  margin: auto;
+  padding: 38px 24px 70px;
+}
+
+/* BIENVENIDA ROSADA */
+
+.dashboard-bienvenida {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  padding: 40px 48px;
+  background: linear-gradient(
+    120deg,
+    #ffe1ee,
+    #fff3f8 60%,
+    #ffe5f2
+  );
+  border: 1px solid #fbd1e3;
+  border-radius: 28px;
+}
+
+.dashboard-etiqueta {
+  color: #c63878;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+}
+
+.dashboard-bienvenida h1 {
+  font-size: clamp(1.8rem, 3.4vw, 3rem);
+  line-height: 1.15;
+  margin: 16px 0;
+  color: #8b2859;
+}
+
+.dashboard-bienvenida p {
+  max-width: 500px;
+  line-height: 1.7;
+  color: #6c4b5a;
+  margin-bottom: 26px;
+}
+
+.dashboard-boton-principal {
+  display: inline-block;
+  text-decoration: none;
+  border-radius: 30px;
+  background: #d83c83;
+  color: #ffffff;
+  padding: 13px 23px;
+  font-weight: 800;
+}
+
+.dashboard-boton-principal:hover {
+  background: #b82a6b;
+}
+
+.dashboard-mascotas {
+  font-size: clamp(4rem, 9vw, 7rem);
+  white-space: nowrap;
+}
+
+/* TÍTULO DE SECCIONES */
+
+.dashboard-encabezado {
+  margin: 44px 0 22px;
+}
+
+.dashboard-encabezado h2 {
+  margin: 9px 0;
+  color: #842a53;
+  font-size: 1.8rem;
+}
+
+.dashboard-encabezado p {
+  color: #806174;
+}
+
+/* TARJETAS DE NAVEGACIÓN */
+
+.dashboard-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.dashboard-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 200px;
+  padding: 26px;
+  border: 1px solid #f5d5e3;
+  background: #ffffff;
+  border-radius: 22px;
+  text-decoration: none;
+  color: #563647;
+  box-shadow: 0 5px 22px #c9537b0b;
+  transition:
+    transform 0.18s,
+    box-shadow 0.18s;
+}
+
+.dashboard-tarjeta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px #c9537b23;
+}
+
+.dashboard-icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  background: #ffebf3;
+  font-size: 1.6rem;
+}
+
+.dashboard-tarjeta h3 {
+  margin: 16px 0 6px;
+  color: #9b3263;
+  font-size: 1.15rem;
+}
+
+.dashboard-tarjeta p {
+  margin: 0 0 15px;
+  color: #816679;
+  line-height: 1.5;
+}
+
+.dashboard-enlace {
+  color: #c63878;
+  font-weight: 800;
+  margin-top: auto;
+}
+
+/* PIE DE PÁGINA */
+
+.dashboard-pie {
+  text-align: center;
+  padding: 22px;
+  border-top: 1px solid #f5d5e3;
+  color: #a56885;
+}
+
+/* DISEÑO RESPONSIVE */
+
+@media (max-width: 850px) {
+
+  .dashboard-tarjetas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-barra {
+    padding: 18px 24px;
+  }
+
+  .dashboard-mascotas {
+    font-size: 4rem;
+  }
+
+}
+
+@media (max-width: 580px) {
+
+  .dashboard-bienvenida {
+    padding: 28px;
+  }
+
+  .dashboard-mascotas {
+    display: none;
+  }
+
+  .dashboard-tarjetas {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-menu {
+    gap: 12px;
+  }
+
+  .dashboard-menu a {
+    font-size: 0.85rem;
+  }
+
+}

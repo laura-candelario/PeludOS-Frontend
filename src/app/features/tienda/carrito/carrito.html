@@ -1,0 +1,270 @@
+
+<div class="carrito-pagina">
+
+  <header class="carrito-header">
+
+    <a routerLink="/home" class="carrito-logo">
+      🐾 PeludOS
+    </a>
+
+    <nav class="carrito-nav">
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/tienda">Tienda</a>
+      <a routerLink="/mascotas">Mis mascotas</a>
+      <a routerLink="/pedidos">Mis pedidos</a>
+      <a routerLink="/perfil">Mi perfil</a>
+
+      <button type="button" (click)="cerrarSesion()">
+        Cerrar sesión
+      </button>
+    </nav>
+
+  </header>
+
+  <main class="carrito-main">
+
+    <section class="carrito-bienvenida">
+
+      <div class="carrito-icono">🛒🐾💗</div>
+
+      <h1>Mi carrito</h1>
+
+      <p>
+        Revisa tus productos antes de finalizar la compra.
+      </p>
+
+    </section>
+
+    @if (error) {
+      <div class="mensaje-error" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    @if (mensaje) {
+      <div class="mensaje-exito" role="status">
+        {{ mensaje }}
+      </div>
+    }
+
+    @if (cargando) {
+
+      <div class="estado-vacio">
+        Cargando tu carrito...
+      </div>
+
+    } @else if (carrito) {
+
+      @if (carrito.detalles.length === 0) {
+
+        <div class="estado-vacio">
+
+          <div class="vacio-icono">🛒</div>
+
+          <h2>Tu carrito está vacío</h2>
+
+          <p>
+            Explora nuestra tienda y encuentra
+            algo especial para tu mascota.
+          </p>
+
+          <a
+            routerLink="/tienda"
+            class="btn btn-primario"
+          >
+            Ir a la tienda 💗
+          </a>
+
+        </div>
+
+      } @else {
+
+        <div class="carrito-contenido">
+
+          <section class="carrito-productos">
+
+            <div class="productos-encabezado">
+
+              <h2>
+                Mis productos
+                ({{ carrito.detalles.length }})
+              </h2>
+
+              <button
+                type="button"
+                class="btn-vaciar"
+                [disabled]="procesando"
+                (click)="vaciarCarrito()"
+              >
+                Vaciar carrito
+              </button>
+
+            </div>
+
+            @for (
+              detalle of carrito.detalles;
+              track detalle.id_detalle_carrito
+            ) {
+
+              <article class="carrito-item">
+
+                <div class="item-imagen">
+
+                  @if (imagenProducto(detalle.id_producto)) {
+
+                    <img
+                      [src]="imagenProducto(detalle.id_producto)"
+                      [alt]="nombreProducto(detalle.id_producto)"
+                    />
+
+                  } @else {
+
+                    <span>🐾</span>
+
+                  }
+
+                </div>
+
+                <div class="item-informacion">
+
+                  <h3>
+                    {{ nombreProducto(detalle.id_producto) }}
+                  </h3>
+
+                  <p class="item-precio">
+                    {{
+                      convertirPrecio(detalle.precio_unitario)
+                      | currency:'COP':'symbol':'1.0-0':'es-CO'
+                    }}
+                    por unidad
+                  </p>
+
+                  <div class="item-cantidad">
+
+                    <button
+                      type="button"
+                      [disabled]="procesando || detalle.cantidad <= 1"
+                      (click)="cambiarCantidad(detalle, -1)"
+                      aria-label="Disminuir cantidad"
+                    >
+                      −
+                    </button>
+
+                    <span>{{ detalle.cantidad }}</span>
+
+                    <button
+                      type="button"
+                      [disabled]="procesando"
+                      (click)="cambiarCantidad(detalle, 1)"
+                      aria-label="Aumentar cantidad"
+                    >
+                      +
+                    </button>
+
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn-eliminar"
+                    [disabled]="procesando"
+                    (click)="eliminarProducto(detalle)"
+                  >
+                    Quitar producto
+                  </button>
+
+                </div>
+
+                <div class="item-subtotal">
+                  {{
+                    convertirPrecio(detalle.subtotal)
+                    | currency:'COP':'symbol':'1.0-0':'es-CO'
+                  }}
+                </div>
+
+              </article>
+
+            }
+
+          </section>
+
+          <aside class="carrito-resumen">
+
+            <h2>Resumen del carrito 💗</h2>
+
+            <div class="resumen-fila">
+              <span>Productos diferentes</span>
+              <strong>{{ carrito.detalles.length }}</strong>
+            </div>
+
+            <hr />
+
+            <div class="resumen-total">
+
+              <span>Total</span>
+
+              <strong>
+                {{
+                  convertirPrecio(carrito.total)
+                  | currency:'COP':'symbol':'1.0-0':'es-CO'
+                }}
+              </strong>
+
+            </div>
+
+            <p class="resumen-nota">
+              Revisa tus cantidades antes
+              de confirmar el pedido.
+            </p>
+
+            <!-- BOTÓN NUEVO -->
+            <a
+              routerLink="/finalizar-compra"
+              class="btn btn-primario seguir-comprando"
+            >
+              Finalizar compra 💗
+            </a>
+
+            <a
+              routerLink="/tienda"
+              class="seguir-comprando"
+              style="
+                display: block;
+                text-align: center;
+                color: #b83280;
+                text-decoration: none;
+                margin-top: 15px;
+                font-weight: 700;
+              "
+            >
+              ← Seguir comprando
+            </a>
+
+            <a
+              routerLink="/pedidos"
+              class="seguir-comprando"
+              style="
+                display: block;
+                text-align: center;
+                color: #806477;
+                text-decoration: none;
+                margin-top: 14px;
+              "
+            >
+              🧾 Consultar mis pedidos
+            </a>
+
+          </aside>
+
+        </div>
+
+      }
+
+    }
+
+  </main>
+
+  <footer class="carrito-footer">
+    🐾 PeludOS — Cuidamos a quienes más amas 💗
+  </footer>
+
+</div>

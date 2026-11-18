@@ -1,0 +1,380 @@
+
+<div class="mascotas-pagina">
+
+  <header class="mascotas-header">
+    <a routerLink="/home" class="mascotas-logo">
+      🐾 PeludOS
+    </a>
+
+    <nav class="mascotas-nav">
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/perfil">Mi perfil</a>
+
+      <button type="button" (click)="cerrarSesion()">
+        Cerrar sesión
+      </button>
+    </nav>
+  </header>
+
+  <main class="mascotas-main">
+
+    <section class="mascotas-bienvenida">
+      <div class="mascotas-titulo">
+        <span class="titulo-icono">🐶🐱</span>
+        <h1>Mis mascotas</h1>
+        <p>
+          Administra la información de tus compañeros peluditos.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-primario"
+        (click)="abrirFormulario()"
+      >
+        + Agregar mascota 💗
+      </button>
+    </section>
+
+    @if (mensaje) {
+      <div class="mensaje-exito" role="status">
+        {{ mensaje }}
+      </div>
+    }
+
+    @if (error) {
+      <div class="mensaje-error" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    <!-- FORMULARIO PARA CREAR O EDITAR -->
+    @if (mostrarFormulario) {
+
+      <section class="formulario-tarjeta">
+
+        <div class="formulario-encabezado">
+          <h2>
+            {{ idEnEdicion !== null
+              ? 'Editar mascota ✏️'
+              : 'Registrar mascota 🐾' }}
+          </h2>
+
+          <button
+            type="button"
+            class="btn-cancelar"
+            (click)="cancelarFormulario()"
+          >
+            Cancelar
+          </button>
+        </div>
+
+        <form
+          (ngSubmit)="guardarMascota()"
+          #formMascota="ngForm"
+        >
+
+          <div class="formulario-grid">
+
+            <div class="campo">
+              <label for="nombre">Nombre *</label>
+              <input
+                id="nombre"
+                name="nombre"
+                type="text"
+                [(ngModel)]="nuevaMascota.nombre"
+                required
+              />
+            </div>
+
+            <div class="campo">
+              <label for="especie">Especie *</label>
+              <select
+                id="especie"
+                name="especie"
+                [(ngModel)]="nuevaMascota.especie"
+                required
+              >
+                <option value="">Selecciona</option>
+                <option value="Perro">Perro</option>
+                <option value="Gato">Gato</option>
+                <option value="Ave">Ave</option>
+                <option value="Conejo">Conejo</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="raza">Raza</label>
+              <input
+                id="raza"
+                name="raza"
+                type="text"
+                [(ngModel)]="nuevaMascota.raza"
+              />
+            </div>
+
+            <div class="campo">
+              <label for="sexo">Sexo</label>
+              <select
+                id="sexo"
+                name="sexo"
+                [(ngModel)]="nuevaMascota.sexo"
+              >
+                <option value="">Selecciona</option>
+                <option value="Macho">Macho</option>
+                <option value="Hembra">Hembra</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="fecha">Fecha de nacimiento</label>
+              <input
+                id="fecha"
+                name="fecha_nacimiento"
+                type="date"
+                [(ngModel)]="nuevaMascota.fecha_nacimiento"
+              />
+            </div>
+
+            <div class="campo">
+              <label for="peso">Peso (kg)</label>
+              <input
+                id="peso"
+                name="peso_kg"
+                type="number"
+                min="0"
+                step="0.1"
+                [(ngModel)]="nuevaMascota.peso_kg"
+              />
+            </div>
+
+            <div class="campo">
+              <label for="color">Color</label>
+              <input
+                id="color"
+                name="color_mascota"
+                type="text"
+                [(ngModel)]="nuevaMascota.color_mascota"
+              />
+            </div>
+
+            <div class="campo">
+              <label for="chip">Microchip</label>
+              <input
+                id="chip"
+                name="numero_chip"
+                type="text"
+                [(ngModel)]="nuevaMascota.numero_chip"
+              />
+            </div>
+
+            <div class="campo campo-completo">
+              <label for="foto">URL de la fotografía</label>
+              <input
+                id="foto"
+                name="foto_url"
+                type="url"
+                placeholder="https://ejemplo.com/foto.jpg"
+                [(ngModel)]="nuevaMascota.foto_url"
+              />
+            </div>
+
+            <div class="campo campo-completo">
+              <label for="alergias">Alergias</label>
+              <textarea
+                id="alergias"
+                name="alergias"
+                rows="3"
+                [(ngModel)]="nuevaMascota.alergias"
+              ></textarea>
+            </div>
+
+            <div class="campo campo-completo">
+              <label for="condiciones">Condiciones médicas</label>
+              <textarea
+                id="condiciones"
+                name="condiciones_medicas"
+                rows="3"
+                [(ngModel)]="nuevaMascota.condiciones_medicas"
+              ></textarea>
+            </div>
+
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primario btn-guardar"
+            [disabled]="guardando || formMascota.invalid"
+          >
+            {{ guardando
+              ? 'Guardando...'
+              : idEnEdicion !== null
+                ? 'Guardar cambios 💗'
+                : 'Registrar mascota 🐾' }}
+          </button>
+
+        </form>
+
+      </section>
+
+    }
+
+    <!-- DETALLES -->
+    @if (cargandoDetalle) {
+      <p class="estado-vacio">
+        Consultando detalles...
+      </p>
+    }
+
+    @if (detalleMascota) {
+
+      <section class="detalle-tarjeta">
+
+        <div class="formulario-encabezado">
+          <h2>Información de {{ detalleMascota.nombre }} 🐾</h2>
+
+          <button
+            type="button"
+            class="btn-cancelar"
+            (click)="cerrarDetalles()"
+          >
+            Cerrar
+          </button>
+        </div>
+
+        <div class="detalle-grid">
+
+          <p><strong>Nombre:</strong> {{ detalleMascota.nombre }}</p>
+          <p><strong>Especie:</strong> {{ detalleMascota.especie }}</p>
+          <p><strong>Raza:</strong> {{ detalleMascota.raza || 'No registrada' }}</p>
+          <p><strong>Sexo:</strong> {{ detalleMascota.sexo || 'No registrado' }}</p>
+          <p><strong>Nacimiento:</strong> {{ detalleMascota.fecha_nacimiento || 'No registrado' }}</p>
+          <p><strong>Peso:</strong> {{ detalleMascota.peso_kg }} kg</p>
+          <p><strong>Color:</strong> {{ detalleMascota.color_mascota || 'No registrado' }}</p>
+          <p><strong>Microchip:</strong> {{ detalleMascota.numero_chip || 'No registrado' }}</p>
+          <p><strong>Alergias:</strong> {{ detalleMascota.alergias || 'No registradas' }}</p>
+          <p><strong>Condiciones médicas:</strong> {{ detalleMascota.condiciones_medicas || 'No registradas' }}</p>
+
+        </div>
+
+      </section>
+
+    }
+
+    <!-- LISTADO -->
+    <section class="mascotas-listado">
+
+      <h2>Mis compañeros peluditos 💕</h2>
+
+      @if (cargando) {
+
+        <p class="estado-vacio">
+          Cargando tus mascotas...
+        </p>
+
+      } @else if (mascotas.length === 0) {
+
+        <div class="estado-vacio">
+          <span>🐾</span>
+          <h3>Aún no tienes mascotas registradas</h3>
+          <p>Agrega tu primer compañero peludito.</p>
+        </div>
+
+      } @else {
+
+        <div class="mascotas-grid">
+
+          @for (mascota of mascotas; track $index) {
+
+            <article class="mascota-tarjeta">
+
+              <div class="mascota-foto">
+
+                @if (mascota.foto_url) {
+                  <img
+                    [src]="mascota.foto_url"
+                    [alt]="'Foto de ' + mascota.nombre"
+                  />
+                } @else {
+                  <span>
+                    {{ mascota.especie === 'Gato' ? '🐱' : '🐶' }}
+                  </span>
+                }
+
+              </div>
+
+              <div class="mascota-info">
+
+                <h3>{{ mascota.nombre }} 💗</h3>
+
+                <p>
+                  <strong>Especie:</strong>
+                  {{ mascota.especie }}
+                </p>
+
+                <p>
+                  <strong>Raza:</strong>
+                  {{ mascota.raza || 'Sin registrar' }}
+                </p>
+
+                <p>
+                  <strong>Sexo:</strong>
+                  {{ mascota.sexo || 'Sin registrar' }}
+                </p>
+
+                <p>
+                  <strong>Peso:</strong>
+                  {{ mascota.peso_kg }} kg
+                </p>
+
+                <div class="mascota-acciones">
+
+                  <button
+                    type="button"
+                    class="accion-detalle"
+                    (click)="verDetalles(mascota)"
+                  >
+                    Ver detalles
+                  </button>
+
+                  <button
+                    type="button"
+                    class="accion-editar"
+                    (click)="editarMascota(mascota)"
+                  >
+                    ✏️ Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="accion-eliminar"
+                    [disabled]="eliminandoId !== null"
+                    (click)="eliminarMascota(mascota)"
+                  >
+                    {{ eliminandoId === mascota.id_mascota
+                      ? 'Eliminando...'
+                      : 'Eliminar' }}
+                  </button>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+  </main>
+
+  <footer class="mascotas-footer">
+    🐾 PeludOS — Cuidamos a quienes más amas 💗
+  </footer>
+
+</div>

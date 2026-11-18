@@ -1,0 +1,82 @@
+
+/* Contenedor principal */
+.registro-contenedor {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #fff7fb, #fce7f3);
+  padding: 40px 20px;
+}
+
+/* Tarjeta del formulario */
+.registro-tarjeta {
+  width: 100%;
+  max-width: 480px;
+  padding: 40px;
+  text-align: center;
+  border: 1px solid #f5c6df;
+  border-radius: 20px;
+}
+
+/* Logo */
+.registro-logo {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* Título */
+.registro-tarjeta h1 {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+/* Texto debajo del título */
+.registro-descripcion {
+  color: var(--texto-secundario);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+/* Campos del formulario */
+.registro-tarjeta .campo {
+  text-align: left;
+}
+
+/* Botón de registro */
+.registro-boton {
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+/* Enlace para iniciar sesión */
+.registro-login {
+  margin-top: 25px;
+  color: var(--texto-secundario);
+  font-size: 14px;
+}
+
+.registro-login a {
+  color: var(--rosa-principal);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.registro-login a:hover {
+  text-decoration: underline;
+}
+
+/* Adaptación para celulares */
+@media (max-width: 480px) {
+  .registro-tarjeta {
+    padding: 25px 20px;
+  }
+
+  .registro-tarjeta h1 {
+    font-size: 25px;
+  }
+}

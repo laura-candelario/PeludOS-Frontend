@@ -1,0 +1,518 @@
+
+<div class="admin-pagina">
+
+  <header class="admin-header">
+
+    <a routerLink="/home" class="admin-logo">
+      🐾 PeludOS
+    </a>
+
+    <nav class="admin-navegacion">
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/tienda">Tienda</a>
+      <a routerLink="/pedidos">Mis compras</a>
+      <a routerLink="/perfil">Mi perfil</a>
+    </nav>
+
+  </header>
+
+  <main class="admin-contenido">
+
+    <section class="admin-bienvenida">
+      <div>
+        <p class="admin-etiqueta">🏥 Gestión veterinaria</p>
+        <h1>Panel administrativo 💗</h1>
+
+        @if (perfil) {
+          <p>
+            ¡Hola, {{ perfil.nombre_completo }}!
+            Administra tus productos y pedidos.
+          </p>
+
+          <span class="admin-rol">
+            {{
+              esAdmin
+                ? 'Administrador general'
+                : nombreVeterinaria(perfil.id_veterinaria!)
+            }}
+          </span>
+        } @else {
+          <p>Tu espacio de administración PeludOS.</p>
+        }
+      </div>
+
+      @if (perfil) {
+        <button
+          type="button"
+          class="boton-recargar"
+          [disabled]="
+            cargando ||
+            guardandoProductoId !== null ||
+            procesandoPedidoId !== null
+          "
+          (click)="cargarDatos()"
+        >
+          ↻ Actualizar datos
+        </button>
+      }
+    </section>
+
+    @if (error) {
+      <div class="admin-error" role="alert">
+        {{ error }}
+      </div>
+    }
+
+    @if (mensaje) {
+      <div class="admin-exito" role="status">
+        ✓ {{ mensaje }}
+      </div>
+    }
+
+    @if (cargando) {
+      <div class="admin-vacio">
+        🐾 Cargando tu panel administrativo...
+      </div>
+    } @else if (!perfil) {
+      <div class="admin-vacio">
+        <h2>Acceso restringido 🔐</h2>
+        <p>
+          Necesitas una cuenta con permisos
+          administrativos para utilizar esta sección.
+        </p>
+        <a routerLink="/home" class="boton-principal">
+          Volver al inicio
+        </a>
+      </div>
+    } @else {
+
+      <!-- FILTRO DE VETERINARIA -->
+      @if (esAdmin) {
+        <div class="admin-filtro-global">
+          <label for="filtroVet">
+            🏥 Veterinaria
+          </label>
+
+          <select
+            id="filtroVet"
+            [(ngModel)]="filtroVeterinaria"
+            (ngModelChange)="filtroEstado = 'todos'"
+          >
+            <option value="todas">
+              Todas las veterinarias
+            </option>
+
+            @for (
+              veterinaria of veterinarias;
+              track veterinaria.id_veterinaria
+            ) {
+              <option
+                [value]="veterinaria.id_veterinaria"
+              >
+                {{ veterinaria.nombre_comercial }}
+              </option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- MENÚ INTERNO -->
+      <div class="admin-tabs">
+
+        <button
+          type="button"
+          [class.activa]="seccion === 'resumen'"
+          (click)="cambiarSeccion('resumen')"
+        >
+          📊 Resumen
+        </button>
+
+        <button
+          type="button"
+          [class.activa]="seccion === 'productos'"
+          (click)="cambiarSeccion('productos')"
+        >
+          📦 Inventario
+        </button>
+
+        <button
+          type="button"
+          [class.activa]="seccion === 'pedidos'"
+          (click)="cambiarSeccion('pedidos')"
+        >
+          🧾 Pedidos
+        </button>
+
+      </div>
+
+      <!-- RESUMEN -->
+      @if (seccion === 'resumen') {
+
+        <section class="admin-indicadores">
+
+          <article class="indicador">
+            <span class="indicador-icono">📦</span>
+            <span class="indicador-titulo">Productos activos</span>
+            <strong>{{ cantidadProductos }}</strong>
+          </article>
+
+          <article class="indicador">
+            <span class="indicador-icono">🧾</span>
+            <span class="indicador-titulo">Pedidos registrados</span>
+            <strong>{{ cantidadPedidos }}</strong>
+          </article>
+
+          <article class="indicador">
+            <span class="indicador-icono">⏳</span>
+            <span class="indicador-titulo">Pedidos pendientes</span>
+            <strong>{{ pedidosPendientes }}</strong>
+          </article>
+
+          <article class="indicador">
+            <span class="indicador-icono">💗</span>
+            <span class="indicador-titulo">
+              Valor de pedidos no cancelados
+            </span>
+
+            <strong class="indicador-dinero">
+              {{
+                valorPedidos
+                  | currency:'COP':'symbol':'1.0-0':'es-CO'
+              }}
+            </strong>
+          </article>
+
+        </section>
+
+        <section class="admin-seccion">
+          <h2>✨ Accesos rápidos</h2>
+          <p class="admin-descripcion">
+            Gestiona el inventario o consulta
+            los pedidos de tu veterinaria.
+          </p>
+
+          <div class="admin-accesos">
+
+            <button
+              type="button"
+              class="acceso-rapido"
+              (click)="cambiarSeccion('productos')"
+            >
+              <span>📦</span>
+              <strong>Gestionar inventario</strong>
+              <small>Actualizar stock y precios</small>
+            </button>
+
+            <button
+              type="button"
+              class="acceso-rapido"
+              (click)="cambiarSeccion('pedidos')"
+            >
+              <span>🧾</span>
+              <strong>Gestionar pedidos</strong>
+              <small>Consultar y actualizar estados</small>
+            </button>
+
+          </div>
+
+        </section>
+
+      }
+
+      <!-- INVENTARIO -->
+      @if (seccion === 'productos') {
+
+        <section class="admin-seccion">
+
+          <div class="seccion-encabezado">
+            <div>
+              <h2>📦 Inventario de productos</h2>
+              <p class="admin-descripcion">
+                Modifica el stock y el precio
+                de los productos disponibles.
+              </p>
+            </div>
+          </div>
+
+          <div class="barra-busqueda">
+            <input
+              type="search"
+              placeholder="Buscar por nombre o categoría..."
+              [(ngModel)]="busquedaProducto"
+            />
+          </div>
+
+          @if (productosVisibles.length === 0) {
+
+            <div class="admin-vacio">
+              No encontramos productos para mostrar.
+            </div>
+
+          } @else {
+
+            <div class="productos-grid">
+
+              @for (
+                producto of productosVisibles;
+                track producto.id_producto
+              ) {
+
+                <article class="producto-admin">
+
+                  <div class="producto-cabecera">
+                    <span class="producto-icono">🐾</span>
+
+                    <div>
+                      <h3>{{ producto.nombre_producto }}</h3>
+                      <small>
+                        {{ nombreVeterinaria(producto.id_veterinaria) }}
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="producto-categoria">
+                    {{ producto.categoria || 'Sin categoría' }}
+                  </div>
+
+                  <div class="producto-campos">
+
+                    <div class="campo">
+                      <label
+                        [for]="'stock-' + producto.id_producto"
+                      >
+                        Existencias
+                      </label>
+
+                      <input
+                        [id]="'stock-' + producto.id_producto"
+                        type="number"
+                        min="0"
+                        step="1"
+                        [(ngModel)]="
+                          borradores[producto.id_producto].stock
+                        "
+                        [disabled]="
+                          !puedeModificarProducto(producto) ||
+                          guardandoProductoId !== null ||
+                          procesandoPedidoId !== null
+                        "
+                      />
+                    </div>
+
+                    <div class="campo">
+                      <label
+                        [for]="'precio-' + producto.id_producto"
+                      >
+                        Precio de venta (COP)
+                      </label>
+
+                      <input
+                        [id]="'precio-' + producto.id_producto"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        [(ngModel)]="
+                          borradores[producto.id_producto].precio_venta
+                        "
+                        [disabled]="
+                          !puedeModificarProducto(producto) ||
+                          guardandoProductoId !== null ||
+                          procesandoPedidoId !== null
+                        "
+                      />
+                    </div>
+
+                  </div>
+
+                  <button
+                    type="button"
+                    class="boton-principal"
+                    [disabled]="
+                      !puedeModificarProducto(producto) ||
+                      guardandoProductoId !== null ||
+                      procesandoPedidoId !== null
+                    "
+                    (click)="guardarProducto(producto)"
+                  >
+                    {{
+                      guardandoProductoId === producto.id_producto
+                        ? 'Guardando...'
+                        : 'Guardar cambios 💗'
+                    }}
+                  </button>
+
+                </article>
+
+              }
+
+            </div>
+
+          }
+
+        </section>
+
+      }
+
+      <!-- PEDIDOS -->
+      @if (seccion === 'pedidos') {
+
+        <section class="admin-seccion">
+
+          <div class="seccion-encabezado">
+
+            <div>
+              <h2>🧾 Gestión de pedidos</h2>
+              <p class="admin-descripcion">
+                Consulta las órdenes y registra
+                su avance de forma segura.
+              </p>
+            </div>
+
+            <select
+              [(ngModel)]="filtroEstado"
+              aria-label="Filtrar pedidos por estado"
+              class="filtro-estado"
+            >
+              <option value="todos">Todos los estados</option>
+              <option value="pendiente">Pendientes</option>
+              <option value="confirmado">Confirmados</option>
+              <option value="enviado">Enviados</option>
+              <option value="entregado">Entregados</option>
+              <option value="cancelado">Cancelados</option>
+            </select>
+
+          </div>
+
+          @if (pedidosVisibles.length === 0) {
+
+            <div class="admin-vacio">
+              No hay pedidos que coincidan con el filtro.
+            </div>
+
+          } @else {
+
+            <div class="pedidos-admin-lista">
+
+              @for (
+                pedido of pedidosVisibles;
+                track pedido.id_pedido
+              ) {
+
+                <article class="pedido-admin">
+
+                  <div class="pedido-admin-cabecera">
+
+                    <div>
+                      <h3>Pedido #{{ pedido.id_pedido }}</h3>
+                      <span class="pedido-fecha">
+                        {{
+                          pedido.fecha_pedido
+                            | date:'dd/MM/yyyy, h:mm a'
+                        }}
+                      </span>
+                    </div>
+
+                    <span
+                      class="estado"
+                      [class]="'estado-' + pedido.estado_pedido"
+                    >
+                      {{ etiquetaEstado(pedido.estado_pedido) }}
+                    </span>
+
+                  </div>
+
+                  <p class="pedido-veterinaria">
+                    🏥 {{ nombreVeterinaria(pedido.id_veterinaria) }}
+                  </p>
+
+                  <div class="pedido-admin-detalles">
+
+                    <div>
+                      <small>Total</small>
+                      <strong>
+                        {{
+                          precio(pedido.total)
+                            | currency:'COP':'symbol':'1.0-0':'es-CO'
+                        }}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <small>Dirección de entrega</small>
+                      <strong>{{ pedido.direccion_entrega }}</strong>
+                    </div>
+
+                    <div>
+                      <small>Método de pago</small>
+                      <strong>
+                        {{
+                          pedido.metodo_pago === 'contra_entrega'
+                            ? 'Contra entrega'
+                            : pedido.metodo_pago || 'Por definir'
+                        }}
+                      </strong>
+                    </div>
+
+                    @if (pedido.notas) {
+                      <div>
+                        <small>Indicaciones</small>
+                        <strong>{{ pedido.notas }}</strong>
+                      </div>
+                    }
+
+                  </div>
+
+                  @if (siguienteEstado(pedido.estado_pedido)) {
+
+                    <button
+                      type="button"
+                      class="boton-principal"
+                      [disabled]="
+                        procesandoPedidoId !== null ||
+                        guardandoProductoId !== null
+                      "
+                      (click)="avanzarPedido(pedido)"
+                    >
+                      {{
+                        procesandoPedidoId === pedido.id_pedido
+                          ? 'Actualizando pedido...'
+                          : 'Marcar como ' +
+                            etiquetaEstado(
+                              siguienteEstado(pedido.estado_pedido)!
+                            )
+                      }}
+                    </button>
+
+                  } @else {
+
+                    <p class="pedido-finalizado">
+                      {{
+                        pedido.estado_pedido === 'entregado'
+                          ? '✓ Pedido entregado'
+                          : 'Este pedido ya no admite avances de estado'
+                      }}
+                    </p>
+
+                  }
+
+                </article>
+
+              }
+
+            </div>
+
+          }
+
+        </section>
+
+      }
+
+    }
+
+  </main>
+
+  <footer class="admin-footer">
+    🐾 PeludOS — Administración veterinaria 💗
+  </footer>
+
+</div>

@@ -1,0 +1,82 @@
+
+/* Fondo principal del login */
+.login-contenedor {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #fff7fb, #fce7f3);
+  padding: 40px 20px;
+}
+
+/* Tarjeta blanca */
+.login-tarjeta {
+  width: 100%;
+  max-width: 450px;
+  padding: 45px 40px;
+  text-align: center;
+  border: 1px solid #f5c6df;
+  border-radius: 20px;
+}
+
+/* Logo de PeludOS */
+.login-logo {
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+/* Título */
+.login-tarjeta h1 {
+  font-size: 29px;
+  margin-bottom: 12px;
+}
+
+/* Descripción */
+.login-descripcion {
+  color: var(--texto-secundario);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+/* Campos */
+.login-tarjeta .campo {
+  text-align: left;
+}
+
+/* Botón */
+.login-boton {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+/* Enlace al registro */
+.login-registro {
+  margin-top: 25px;
+  color: var(--texto-secundario);
+  font-size: 14px;
+}
+
+.login-registro a {
+  color: var(--rosa-principal);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-registro a:hover {
+  text-decoration: underline;
+}
+
+/* Diseño para celulares */
+@media (max-width: 480px) {
+  .login-tarjeta {
+    padding: 30px 22px;
+  }
+
+  .login-tarjeta h1 {
+    font-size: 25px;
+  }
+}

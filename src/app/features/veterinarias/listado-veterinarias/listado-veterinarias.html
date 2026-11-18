@@ -1,0 +1,272 @@
+
+<div class="veterinarias-pagina">
+
+  <!-- MENÚ SUPERIOR -->
+  <header class="veterinarias-header">
+
+    <a routerLink="/home" class="veterinarias-logo">
+      🐾 PeludOS
+    </a>
+
+    <nav class="veterinarias-nav">
+      <a routerLink="/home">Inicio</a>
+      <a routerLink="/mascotas">Mis mascotas</a>
+      <a routerLink="/perfil">Mi perfil</a>
+    </nav>
+
+  </header>
+
+  <main class="veterinarias-main">
+
+    <!-- BIENVENIDA -->
+    <section class="veterinarias-bienvenida">
+
+      <div class="veterinarias-icono">🏥💗🐶</div>
+
+      <h1>Veterinarias</h1>
+
+      <p>
+        Encuentra una veterinaria para cuidar
+        la salud de tus compañeros peluditos.
+      </p>
+
+    </section>
+
+    <!-- BUSCADOR -->
+    <section class="buscador-tarjeta">
+
+      <label for="buscar">
+        🔎 Buscar veterinaria
+      </label>
+
+      <input
+        id="buscar"
+        type="search"
+        name="busqueda"
+        [(ngModel)]="busqueda"
+        placeholder="Escribe el nombre o la dirección..."
+      />
+
+    </section>
+
+    <!-- MENSAJES -->
+    @if (error) {
+      <p class="mensaje-error" role="alert">
+        {{ error }}
+      </p>
+
+      <button
+        type="button"
+        class="btn btn-primario"
+        (click)="cargarVeterinarias()"
+      >
+        Intentar nuevamente
+      </button>
+    }
+
+    @if (errorDetalle) {
+      <p class="mensaje-error" role="alert">
+        {{ errorDetalle }}
+      </p>
+    }
+
+    @if (cargandoDetalle) {
+      <p class="estado-vacio">
+        Consultando información de la veterinaria...
+      </p>
+    }
+
+    <!-- DETALLES DE LA VETERINARIA -->
+    @if (veterinariaSeleccionada) {
+
+      <section class="detalle-tarjeta">
+
+        <div class="detalle-encabezado">
+
+          <h2>
+            🏥 {{ veterinariaSeleccionada.nombre_comercial }}
+          </h2>
+
+          <button
+            type="button"
+            class="btn-cerrar"
+            (click)="cerrarDetalles()"
+          >
+            Cerrar
+          </button>
+
+        </div>
+
+        <div class="detalle-datos">
+
+          <p>
+            <strong>📍 Dirección:</strong>
+            {{ veterinariaSeleccionada.direccion }}
+          </p>
+
+          <p>
+            <strong>📞 Teléfono:</strong>
+            {{
+              veterinariaSeleccionada.telefono
+              || 'No registrado'
+            }}
+          </p>
+
+          <p>
+            <strong>✉️ Correo:</strong>
+            {{
+              veterinariaSeleccionada.correo_electronico
+              || 'No registrado'
+            }}
+          </p>
+
+          <p>
+            <strong>🕒 Horario:</strong>
+            {{
+              veterinariaSeleccionada.horario_atencion
+              || 'No registrado'
+            }}
+          </p>
+
+          <p>
+            <strong>⭐ Calificación:</strong>
+            {{
+              veterinariaSeleccionada.calificacion_promedio
+                != null
+                ? veterinariaSeleccionada.calificacion_promedio
+                : 'Sin calificación'
+            }}
+          </p>
+
+        </div>
+
+        <a
+          class="btn btn-primario enlace-mapa"
+          [href]="obtenerMapa(veterinariaSeleccionada)"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📍 Ver ubicación en Google Maps
+        </a>
+
+      </section>
+
+    }
+
+    <!-- LISTADO -->
+    <section class="veterinarias-listado">
+
+      <h2>Veterinarias disponibles 🐾</h2>
+
+      @if (cargando) {
+
+        <div class="estado-vacio">
+          <p>Cargando veterinarias...</p>
+        </div>
+
+      } @else if (error) {
+
+        <div class="estado-vacio">
+          No se pudo obtener el listado.
+        </div>
+
+      } @else if (veterinariasFiltradas.length === 0) {
+
+        <div class="estado-vacio">
+
+          <div class="vacio-icono">🐾</div>
+
+          @if (busqueda) {
+            <h3>No encontramos coincidencias</h3>
+            <p>Intenta con otro nombre o dirección.</p>
+          } @else {
+            <h3>Aún no hay veterinarias disponibles</h3>
+            <p>Las veterinarias registradas aparecerán aquí.</p>
+          }
+
+        </div>
+
+      } @else {
+
+        <p class="contador-resultados">
+          {{ veterinariasFiltradas.length }}
+          veterinaria(s) encontrada(s)
+        </p>
+
+        <div class="veterinarias-grid">
+
+          @for (
+            veterinaria of veterinariasFiltradas;
+            track veterinaria.id_veterinaria
+          ) {
+
+            <article class="veterinaria-tarjeta">
+
+              <div class="veterinaria-imagen">
+                🏥🐾
+              </div>
+
+              <div class="veterinaria-info">
+
+                <h3>
+                  {{ veterinaria.nombre_comercial }}
+                </h3>
+
+                <p>
+                  <strong>📍 Dirección:</strong>
+                  {{ veterinaria.direccion }}
+                </p>
+
+                <p>
+                  <strong>📞 Teléfono:</strong>
+                  {{ veterinaria.telefono || 'No registrado' }}
+                </p>
+
+                <p>
+                  <strong>🕒 Horario:</strong>
+                  {{
+                    veterinaria.horario_atencion
+                    || 'No registrado'
+                  }}
+                </p>
+
+                <div class="veterinaria-acciones">
+
+                  <button
+                    type="button"
+                    class="btn btn-primario"
+                    (click)="verDetalles(veterinaria)"
+                  >
+                    Ver detalles 💗
+                  </button>
+
+                  <a
+                    [href]="obtenerMapa(veterinaria)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="boton-ubicacion"
+                  >
+                    Ver ubicación
+                  </a>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+  </main>
+
+  <footer class="veterinarias-footer">
+    🐾 PeludOS — Cuidamos a quienes más amas 💗
+  </footer>
+
+</div>

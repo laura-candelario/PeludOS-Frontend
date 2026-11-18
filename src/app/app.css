@@ -1,0 +1,48 @@
+
+.contenedor-inicio {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+.bienvenida {
+  max-width: 550px;
+  width: 100%;
+  text-align: center;
+  padding: 45px 35px;
+}
+
+.logo {
+  font-size: 55px;
+  margin-bottom: 15px;
+}
+
+.bienvenida h1 {
+  font-size: 34px;
+  margin-bottom: 15px;
+}
+
+.bienvenida p {
+  font-size: 17px;
+  color: var(--texto-secundario);
+  line-height: 1.7;
+}
+
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.btn-secundario {
+  background-color: var(--rosa-claro);
+  color: var(--rosa-fuerte);
+}
+
+.btn-secundario:hover {
+  background-color: var(--rosa-pastel);
+}
